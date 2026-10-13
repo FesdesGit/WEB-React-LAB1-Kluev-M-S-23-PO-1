@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { UserDraft } from './user';
 
 interface UserFormProps {
@@ -44,18 +44,6 @@ export function UserForm({ open, initial, onSubmit, onClose }: UserFormProps) {
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!validate() || submitting) return;
-    setSubmitting(true);
-    try {
-      await onSubmit(draft);
-      onClose();
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   if (!open) return null;
 
   const title = initial ? 'Редактирование пользователя' : 'Новый пользователь';
@@ -65,7 +53,18 @@ export function UserForm({ open, initial, onSubmit, onClose }: UserFormProps) {
       <div className="modal-box max-w-xl">
         <h3 className="mb-4 text-lg font-bold">{title}</h3>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <form onSubmit={async (e) => {
+                          e.preventDefault();
+                          if (!validate() || submitting) return;
+                          setSubmitting(true);
+                          try {
+                            await onSubmit(draft);
+                            onClose();
+                          } finally {
+                            setSubmitting(false);
+                          }
+                        }} 
+                        className="flex flex-col gap-3">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Имя" error={errors.firstName}>
               <input

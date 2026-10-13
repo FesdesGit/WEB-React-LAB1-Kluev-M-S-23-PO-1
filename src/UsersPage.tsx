@@ -50,9 +50,10 @@ export function UsersPage() {
 
   const handleConfirmDelete = async () => {
     if (!pendingDelete) return;
+    const target = pendingDelete;
+    setPendingDelete(null);
     try {
-      await removeUser(pendingDelete.id);
-      setPendingDelete(null);
+      await removeUser(target.id);
     } catch (e) {
       setActionError(e instanceof Error ? e.message : 'Ошибка удаления');
     }
